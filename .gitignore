@@ -1,0 +1,34 @@
+# =========================
+# .NET Backend Ignores
+# =========================
+[Bb]in/
+[Oo]bj/
+# Visual Studio / VS Code folders
+.vs/
+.vscode/
+*.user
+*.userosscache
+*.sln.docstates
+
+# =========================
+# Angular Frontend Ignores
+# =========================
+node_modules/
+dist/
+tmp/
+out-tsc/
+bazel-out/
+
+# Angular environment files (Optional: uncomment if you put API keys here later)
+# src/environments/environment.ts
+# src/environments/environment.development.ts
+
+# =========================
+# OS & General Ignores
+# =========================
+.DS_Store
+Thumbs.db
+*.log
+
+# Ignore the local database backup file you will make later so Git doesn't struggle with the large file
+*.bak
