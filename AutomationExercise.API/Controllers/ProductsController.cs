@@ -2,11 +2,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient; 
 using AutomationExercise.api.Models;
 using System.ComponentModel;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AutomationExercise.api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ProductsController : ControllerBase
     {
         private readonly IConfiguration _configuration;
