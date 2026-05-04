@@ -1,10 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient; 
 using AutomationExercise.api.Models;
-using System.ComponentModel;
 using Microsoft.AspNetCore.Authorization;
 
-namespace AutomationExercise.api.Controllers
+namespace AutomationExercise.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
