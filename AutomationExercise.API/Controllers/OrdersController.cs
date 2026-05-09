@@ -65,6 +65,24 @@ namespace AutomationExercise.API.Controllers
             string connectionString = _configuration.GetConnectionString("DefaultConnection") ?? "";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
+                connection.Open();
+                decimal backendCalculatedTotal = 0;
+                foreach (var item in order.OrderItems)
+                {
+                    SqlCommand priceCommand = new SqlCommand("SELECT Price FROM Products WHERE ProductID = @ProductID", connection);
+                    priceCommand.Parameters.AddWithValue("@ProductID", item.ProductID);
+                    var priceResult = priceCommand.ExecuteScalar();
+                    if (priceResult != null)
+                    {
+                        decimal price = Convert.ToDecimal(priceResult);
+                        item.UnitPrice = price;
+                    }
+                    else
+                    {
+                        return BadRequest($"Product with ID {item.ProductID} not found.");
+                    }
+                    backendCalculatedTotal += item.UnitPrice * item.Quantity;
+                }
                 string sqlQuery1 = "INSERT INTO Orders (OrderNumber, ShippingAddress, Mentions, OrderDate, TotalPrice, UserID) VALUES (@OrderNumber, @ShippingAddress, @Mentions, @OrderDate, @TotalPrice, @UserID);SELECT SCOPE_IDENTITY();";
 
                 using (SqlCommand command = new SqlCommand(sqlQuery1, connection))
@@ -73,10 +91,8 @@ namespace AutomationExercise.API.Controllers
                     command.Parameters.AddWithValue("@ShippingAddress", order.ShippingAddress);
                     command.Parameters.AddWithValue("@Mentions", (object?)order.Mentions ?? DBNull.Value);
                     command.Parameters.AddWithValue("@OrderDate", (object?)order.OrderDate ?? DBNull.Value);
-                    command.Parameters.AddWithValue("@TotalPrice", order.TotalPrice);
+                    command.Parameters.AddWithValue("@TotalPrice", backendCalculatedTotal);
                     command.Parameters.AddWithValue("@UserID", order.UserID);
-
-                    connection.Open();
                     int newOrderId = Convert.ToInt32(command.ExecuteScalar());
                     order.OrderID = newOrderId;
                 }
@@ -89,7 +105,7 @@ namespace AutomationExercise.API.Controllers
                         command.Parameters.AddWithValue("@OrderID", order.OrderID);
                         command.Parameters.AddWithValue("@Quantity", item.Quantity);
                         command.Parameters.AddWithValue("@UnitPrice", item.UnitPrice);
-                        command.ExecuteNonQuery();
+                        command.ExecuteNonQuery();                    
                     }
                 }
             }
