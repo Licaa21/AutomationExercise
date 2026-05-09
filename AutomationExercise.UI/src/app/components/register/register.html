@@ -1,0 +1,15 @@
+<div>
+    <h2>Register</h2>
+    <input type="text" [(ngModel)]="username" placeholder="Username" /> 
+    <input type="email" [(ngModel)]="email" placeholder="Email" />
+    <input type="password" [(ngModel)]="password" placeholder="Password" />
+   
+    @if (errorMessage) {
+        <p style="color: red;">{{ errorMessage }}</p>
+    }
+    @if (successMessage) {
+        <p style="color: green;">{{ successMessage }}</p>
+    }
+    <button (click)="register()">Register</button>
+    <button (click)="goToLogin.emit()">Already have an account? Login</button>
+</div>
