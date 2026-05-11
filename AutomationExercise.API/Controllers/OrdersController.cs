@@ -58,6 +58,61 @@ namespace AutomationExercise.API.Controllers
             }
             return Ok(orders);
         }
+        [HttpGet("user/{userId}")]
+        public IActionResult GetOrdersByUser(int userId)
+        {
+            string connectionString = _configuration.GetConnectionString("DefaultConnection") ?? "";
+            var orderDict = new Dictionary<int, Order>();
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string sqlQuery = @"SELECT o.OrderID, o.OrderNumber, o.OrderDate, o.TotalPrice, o.ShippingAddress,
+                                    oi.Quantity, oi.UnitPrice, oi.ProductID, p.Name, p.ImageUrl
+                                    FROM Orders o
+                                    JOIN OrderItems oi ON o.OrderID = oi.OrderID
+                                    JOIN Products p ON oi.ProductID = p.ProductID
+                                    WHERE o.UserID = @UserID
+                                    ORDER BY o.OrderDate DESC";
+
+                using (SqlCommand command = new SqlCommand(sqlQuery, connection))
+                {
+                    command.Parameters.AddWithValue("@UserID", userId);
+                    connection.Open();
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int orderId = Convert.ToInt32(reader["OrderID"]);
+
+                            if (!orderDict.ContainsKey(orderId))
+                            {
+                                orderDict[orderId] = new Order
+                                {
+                                    OrderID = orderId,
+                                    OrderNumber = Convert.ToInt32(reader["OrderNumber"]),
+                                    OrderDate = reader["OrderDate"] == DBNull.Value ? null : DateTime.SpecifyKind(Convert.ToDateTime(reader["OrderDate"]), DateTimeKind.Utc),
+                                    TotalPrice = Convert.ToDecimal(reader["TotalPrice"]),
+                                    ShippingAddress = reader["ShippingAddress"].ToString() ?? "",
+                                    UserID = userId
+                                };
+                            }
+
+                            orderDict[orderId].OrderItems.Add(new OrderItem
+                            {
+                                ProductID = Convert.ToInt32(reader["ProductID"]),
+                                Quantity = Convert.ToInt32(reader["Quantity"]),
+                                UnitPrice = Convert.ToDecimal(reader["UnitPrice"]),
+                                ProductName = reader["Name"].ToString() ?? "",
+                                ImageUrl = reader["ImageUrl"].ToString() ?? ""
+                            });
+                        }
+                    }
+                }
+            }
+
+            return Ok(orderDict.Values.ToList());
+        }
+
 
         [HttpPost]
         public IActionResult AddOrder([FromBody] Order order)

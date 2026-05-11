@@ -74,5 +74,36 @@ namespace AutomationExercise.API.Controllers
 
             return Unauthorized("Invalid username or password.");
         }
+        [HttpGet("profile")]
+        public IActionResult Profile([FromQuery] int userId)
+        {
+            string connectionString = _configuration.GetConnectionString("DefaultConnection") ?? "";
+             using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string sqlQuery = "SELECT Username, Email, CreatedAt FROM Users WHERE UserID = @UserID";
+                using (SqlCommand command = new SqlCommand(sqlQuery, connection))
+                {
+                    command.Parameters.AddWithValue("@UserID", userId);
+                    connection.Open();
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            var profile = new
+                            {
+                                Username = reader["Username"].ToString(),
+                                Email = reader["Email"].ToString(),
+                                CreatedAt = Convert.ToDateTime(reader["CreatedAt"])
+                            };
+                            return Ok(profile);
+                        }
+                        else
+                        {
+                            return NotFound("User not found.");
+                        }
+                    }
+                }
+            }
+        }
     }
 }

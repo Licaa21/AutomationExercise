@@ -2,7 +2,7 @@
   <span class="navbar-brand fw-bold">Automation Exercise</span>
   <div class="d-flex gap-2 align-items-center">
     <div class="position-relative">
-      <button class="btn btn-outline-light btn-sm" (click)="toggleCart()">
+      <button class="btn btn-outline-light btn-sm" (click)="toggleCart(); showProfile = false">
         Cart <span class="badge bg-primary">{{ cartItemCount }}</span>
       </button>
       @if (showCart) {
@@ -10,8 +10,28 @@
       }
     </div>
     @if (auth.isLoggedIn()) {
-      <button class="btn btn-danger btn-sm" (click)="logout()">Logout</button>
-    } @else {
+  <div class="position-relative">
+    <button class="btn btn-outline-light btn-sm" (click)="showProfile = !showProfile; showCart = false;">
+      {{ profileUser?.username ?? 'Profile' }}
+    </button>
+    @if (showProfile) {
+      <div class="profile-dropdown">
+        <div class="profile-dropdown-header d-flex justify-content-between align-items-start">
+          <div>
+            <strong>{{ profileUser?.username }}</strong>
+            <small class="text-muted d-block">{{ profileUser?.email }}</small>
+            <small class="text-muted d-block">Member since {{ profileUser?.createdAt | date:'dd MMMM, yyyy' }}</small>
+          </div>
+          <button type="button" class="btn-close btn-close-white" (click)="showProfile = false"></button>
+        </div>
+        <div class="profile-dropdown-footer">
+          <button class="btn btn-outline-secondary btn-sm w-100 mb-1" (click)="showOrders = true; showProfile = false">My Orders</button>
+          <button class="btn btn-danger btn-sm w-100" (click)="logout(); showProfile=false">Logout</button>
+        </div>
+      </div>
+    }
+  </div>
+} @else {
       <button class="btn btn-primary btn-sm" (click)="showLogin=true">Login</button>
     }
   </div>
@@ -24,7 +44,10 @@
   @if (showRegister) {
     <app-register (goToLogin)="onGotoLogin()" (close)="showRegister=false"></app-register>
   }
-@if (showCheckout) {
+  @if (showOrders) {
+    <app-order-list (close)="showOrders=false"></app-order-list>
+  }
+  @if (showCheckout) {
     <app-checkout (closeCheckout)="toggleCart()" (orderPlaced)="onOrderPlaced()"></app-checkout>
   }
   <app-product-list (requestLogin)="onRequestLogin()" (itemAdded)="showCart=true"></app-product-list>

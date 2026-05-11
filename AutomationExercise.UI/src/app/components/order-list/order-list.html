@@ -1,0 +1,38 @@
+<div class="orders-backdrop" (click)="close.emit()">
+  <div class="orders-card" (click)="$event.stopPropagation()">
+    <div class="modal-header-bar">
+      <span class="fw-bold">My Orders</span>
+      <button type="button" class="btn-close btn-close-white" (click)="close.emit()"></button>
+    </div>
+    <div class="orders-body">
+      @if (loading) {
+        <p class="text-muted text-center py-3">Loading...</p>
+      } @else if (error) {
+        <p class="text-danger text-center py-3">{{ error }}</p>
+      } @else if (orders.length === 0) {
+        <p class="text-muted text-center py-3">No orders yet.</p>
+      } @else {
+        @for (order of orders; track order.orderID) {
+          <div class="order-card mb-3">
+            <div class="order-card-header d-flex justify-content-between align-items-center">
+              <span class="fw-bold">Order #{{ order.orderNumber }}</span>
+              <small class="text-muted">{{ order.orderDate | date:'dd MMM yyyy' }}</small>
+            </div>
+            <div class="order-items">
+              @for (item of order.orderItems; track item.productID) {
+                <div class="order-item">
+                  <img [src]="item.imageUrl" alt="{{ item.productName }}" class="order-item-img">
+                  <span class="order-item-name">{{ item.productName }} × {{ item.quantity }}</span>
+                  <span class="text-success fw-bold">${{ item.unitPrice * item.quantity | number:'1.2-2' }}</span>
+                </div>
+              }
+            </div>
+            <div class="order-card-footer d-flex justify-content-end">
+              <span class="fw-bold">Total: <span class="text-success">${{ order.totalPrice | number:'1.2-2' }}</span></span>
+            </div>
+          </div>
+        }
+      }
+    </div>
+  </div>
+</div>

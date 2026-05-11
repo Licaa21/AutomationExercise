@@ -1,22 +1,24 @@
-import { Component, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { Component, Output, EventEmitter, ChangeDetectorRef, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Cart as CartService, CartItem } from '../../services/cart';
 import { Auth } from '../../services/auth';
 import { ProductService, Product } from '../../services/product';
 import { take } from 'rxjs';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-checkout',
-  imports: [FormsModule],
+  imports: [FormsModule, CommonModule],
   templateUrl: './checkout.html',
   styleUrl: './checkout.scss',
 })
-export class Checkout {
+export class Checkout implements OnInit {
   shippingAddress: string = '';
   mentions: string = '';
   errorMessage: string = '';
   successMessage: string = '';
+  cartItems: CartItem[] = []
   priceChanges: { name: string; oldPrice: number; newPrice: number }[] = [];
   pendingCartItems: CartItem[] = [];
   showPriceConfirm = false;
@@ -31,7 +33,15 @@ export class Checkout {
     private cdr: ChangeDetectorRef,
     private productService: ProductService
   ) {}
-
+  ngOnInit(): void {
+    this.cartService.cart$.subscribe(items => {
+      this.cartItems = items;
+      this.cdr.detectChanges();
+    });
+  }
+  get totalPrice(): number {
+    return parseFloat(this.cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0).toFixed(2));
+  }
   placeOrder() {
     this.cartService.cart$.pipe(take(1)).subscribe((cartItems: CartItem[]) => {
       this.productService.getProducts().pipe(take(1)).subscribe((freshProducts: Product[]) => {

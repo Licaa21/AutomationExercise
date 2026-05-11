@@ -27,6 +27,7 @@ export class Auth {
   logout(): void {
     localStorage.removeItem('authToken');
     localStorage.removeItem('userId');
+    localStorage.removeItem('userProfile');
   }
   isLoggedIn(): boolean {
     return this.getToken() !== null;
@@ -37,5 +38,16 @@ export class Auth {
   getUserId() {
     return parseInt(localStorage.getItem('userId') ?? '0');
     
+  }
+  getprofile(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/profile?userId=${this.getUserId()}`);
+  }
+  saveProfile(profile: any){
+    localStorage.setItem('userProfile', JSON.stringify(profile));
+  }
+  loadProfile():any
+  {
+    const raw = localStorage.getItem('userProfile');
+    return raw ? JSON.parse(raw) : null;
   }
 }

@@ -38,6 +38,7 @@ export class ProductList implements OnInit {
       name: product.name,
       price: product.price,
       quantity: 1,
+      imageUrl: product.imageUrl,
     };
     this.cart.addToCart(cartItem);
     this.itemAdded.emit();

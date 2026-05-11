@@ -1,7 +1,7 @@
 <div class="cart-dropdown">
   <div class="cart-dropdown-header">
     <span class="fw-bold">Your Cart</span>
-    <button type="button" class="btn-close" (click)="closeCart.emit()"></button>
+    <button type="button" class="btn-close btn-close-white" (click)="closeCart.emit()"></button>
   </div>
   <div class="cart-dropdown-body">
     @if (cartItems.length === 0) {
@@ -9,8 +9,9 @@
     } @else {
       <ul class="list-group list-group-flush mb-3">
         @for (item of cartItems; track item.productId) {
-          <li class="list-group-item d-flex justify-content-between align-items-center px-0">
-            <div>
+          <li class="list-group-item d-flex justify-content-between align-items-center px-0 gap-2">
+            <img [src]="item.imageUrl" alt="{{ item.name }}" class="cart-item-img">
+            <div class="flex-grow-1">
               <strong>{{ item.name }}</strong>
               <small class="text-muted d-block">Qty: {{ item.quantity }} × ${{ item.price }}</small>
             </div>
