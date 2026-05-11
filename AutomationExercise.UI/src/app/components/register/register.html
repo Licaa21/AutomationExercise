@@ -1,15 +1,30 @@
-<div>
-    <h2>Register</h2>
-    <input type="text" [(ngModel)]="username" placeholder="Username" /> 
-    <input type="email" [(ngModel)]="email" placeholder="Email" />
-    <input type="password" [(ngModel)]="password" placeholder="Password" />
-   
-    @if (errorMessage) {
-        <p style="color: red;">{{ errorMessage }}</p>
-    }
-    @if (successMessage) {
-        <p style="color: green;">{{ successMessage }}</p>
-    }
-    <button (click)="register()">Register</button>
-    <button (click)="goToLogin.emit()">Already have an account? Login</button>
+<div class="register-backdrop" (click)="close.emit()">
+  <div class="register-card" (click)="$event.stopPropagation()">
+    <div class="modal-header-bar">
+      <h5 class="mb-0">Create Account</h5>
+      <button type="button" class="btn-close btn-close-white" (click)="close.emit()"></button>
+    </div>
+    <div class="p-4">
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Username</label>
+        <input type="text" class="form-control" [(ngModel)]="username" placeholder="Choose a username" />
+      </div>
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Email</label>
+        <input type="email" class="form-control" [(ngModel)]="email" placeholder="Enter your email" />
+      </div>
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Password</label>
+        <input type="password" class="form-control" [(ngModel)]="password" placeholder="Choose a password" />
+      </div>
+      @if (errorMessage) {
+        <div class="alert alert-danger">{{ errorMessage }}</div>
+      }
+      @if (successMessage) {
+        <div class="alert alert-success">{{ successMessage }}</div>
+      }
+      <button class="btn btn-primary w-100 mb-2" (click)="register()">Create Account</button>
+      <button class="btn btn-link w-100" (click)="goToLogin.emit()">Already have an account? Login</button>
+    </div>
+  </div>
 </div>

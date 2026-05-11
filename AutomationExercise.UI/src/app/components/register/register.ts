@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component,ChangeDetectorRef } from '@angular/core';
 import { Output } from '@angular/core';
 import { EventEmitter } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -18,17 +18,21 @@ export class Register {
   successMessage: string = '';
 
   @Output() goToLogin = new EventEmitter<void>();
+  @Output() close = new EventEmitter<void>();
 
-  constructor(private auth: Auth) {}
+  constructor(private auth: Auth, private cdr: ChangeDetectorRef) {}
 
   register(): void {
     this.auth.register(this.username, this.email, this.password).subscribe({
       next: (response) => {
         this.successMessage = 'Registration successful! You can now log in.';
+        this.cdr.detectChanges();
         this.errorMessage = '';
+        
       },
       error: (err) => {
         this.errorMessage = 'Registration failed. Please try again.';
+        this.cdr.detectChanges();
         this.successMessage = '';
       },
     });

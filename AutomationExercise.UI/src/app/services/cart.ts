@@ -43,8 +43,19 @@ export class Cart {
     this.cartSubject.next(updatedCart);
   }
 
-  clearCart(): void 
+  clearCart(): void
   {
     this.cartSubject.next([]);
+  }
+
+  saveCart(userId: number): void {
+    localStorage.setItem(`cart_${userId}`, JSON.stringify(this.cartSubject.getValue()));
+  }
+
+  loadCart(userId: number): void {
+    const saved = localStorage.getItem(`cart_${userId}`);
+    if (saved) {
+      this.cartSubject.next(JSON.parse(saved));
+    }
   }
 }

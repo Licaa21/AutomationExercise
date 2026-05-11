@@ -24,7 +24,7 @@ namespace AutomationExercise.API.Controllers
             string connectionString = _configuration.GetConnectionString("DefaultConnection") ?? "";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                string sqlQuery = "SELECT ProductID, Name, Description, Price FROM Products";
+                string sqlQuery = "SELECT ProductID, Name, Description, Price, ImageUrl, ImagePosition FROM Products";
                 using (SqlCommand command = new SqlCommand(sqlQuery, connection))
                 {
                     connection.Open();
@@ -37,7 +37,9 @@ namespace AutomationExercise.API.Controllers
                                 ProductID = Convert.ToInt32(reader["ProductID"]),
                                 Name = reader["Name"].ToString() ?? "",
                                 Description = reader["Description"].ToString() ?? "",
-                                Price = Convert.ToDecimal(reader["Price"])
+                                Price = Convert.ToDecimal(reader["Price"]),
+                                ImageUrl = reader["ImageUrl"].ToString() ?? "",
+                                ImagePosition = reader["ImagePosition"].ToString() ?? "center"
                             };
                             products.Add(product);
                         }

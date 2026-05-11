@@ -26,8 +26,16 @@ export class Auth {
   }
   logout(): void {
     localStorage.removeItem('authToken');
+    localStorage.removeItem('userId');
   }
   isLoggedIn(): boolean {
     return this.getToken() !== null;
+  }
+  saveUserId(id: number): void {
+    localStorage.setItem('userId', id.toString());
+  }
+  getUserId() {
+    return parseInt(localStorage.getItem('userId') ?? '0');
+    
   }
 }

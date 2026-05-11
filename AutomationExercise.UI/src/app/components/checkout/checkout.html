@@ -1,1 +1,48 @@
-<p>checkout works!</p>
+<div class="checkout-backdrop">
+  <div class="checkout-card" (click)="$event.stopPropagation()">
+    <div class="modal-header-bar">
+      <h5 class="mb-0">Checkout</h5>
+      <button class="btn btn-sm btn-outline-light" (click)="closeCheckout.emit()">← Back to Cart</button>
+    </div>
+    <div class="p-4">
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Shipping Address</label>
+        <textarea class="form-control" rows="3" [(ngModel)]="shippingAddress" placeholder="Enter your shipping address"></textarea>
+      </div>
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Additional Notes <span class="text-muted">(optional)</span></label>
+        <input type="text" class="form-control" [(ngModel)]="mentions" placeholder="Any special instructions?">
+      </div>
+      @if (errorMessage) {
+        <div class="alert alert-danger">{{ errorMessage }}</div>
+      }
+      @if (successMessage) {
+        <div class="alert alert-success">{{ successMessage }}</div>
+      }
+      <button class="btn btn-success w-100 mt-2" (click)="placeOrder()">Place Order</button>
+    </div>
+  </div>
+</div>
+
+@if (showPriceConfirm) {
+  <div class="price-confirm-backdrop">
+    <div class="price-confirm-card">
+      <h5 class="fw-bold mb-1">Prices have changed</h5>
+      <p class="text-muted mb-3 small">The following items were updated since you added them to your cart:</p>
+      @for (change of priceChanges; track change.name) {
+        <div class="d-flex justify-content-between align-items-center mb-2 px-3 py-2 bg-light rounded">
+          <span class="fw-semibold">{{ change.name }}</span>
+          <span>
+            <span class="text-decoration-line-through text-muted me-2">${{ change.oldPrice }}</span>
+            <span class="text-success fw-bold">${{ change.newPrice }}</span>
+          </span>
+        </div>
+      }
+      <p class="mt-3 mb-3 text-muted small">Do you want to continue with the updated prices?</p>
+      <div class="d-flex gap-2 justify-content-end">
+        <button class="btn btn-outline-secondary" (click)="cancelPriceConfirm()">Cancel</button>
+        <button class="btn btn-success" (click)="confirmOrder()">Confirm & Place Order</button>
+      </div>
+    </div>
+  </div>
+}

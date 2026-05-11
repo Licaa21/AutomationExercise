@@ -110,7 +110,7 @@ namespace AutomationExercise.API.Controllers
                 }
             }
 
-            return Ok("Order added successfully!");
+            return Ok(new { message = "Order added successfully!" });
         }
     }
 }

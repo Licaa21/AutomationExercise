@@ -1,11 +1,45 @@
 <div>
-    <h2>Products</h2>
-    @for (product of products; track product.productID) {
-        <div>
-            <h3>{{ product.name }}</h3>
-            <p>{{ product.description }}</p>
-            <p>Price: ${{ product.price}}</p>
-            <button (click)="addToCart(product)">Add to Cart</button>
+  <h2 class="mb-4 fw-bold">Products</h2>
+  <div class="row row-cols-1 row-cols-md-3 g-4">
+    @for (product of (products$ | async) ?? []; track product.productID) {
+      <div class="col">
+        <div class="card h-100 shadow-sm" style="cursor: pointer;" (click)="openProduct(product)">
+          @if (product.imageUrl) {
+            <img src="{{ product.imageUrl }}" class="card-img-top" alt="{{ product.name }}"
+              style="height: 220px; object-fit: cover;"
+              [style.object-position]="product.imagePosition">
+          }
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title">{{ product.name }}</h5>
+            <p class="card-text text-muted flex-grow-1">{{ product.description }}</p>
+            <div class="d-flex justify-content-between align-items-center mt-3">
+              <span class="fw-bold fs-5 text-success">${{ product.price }}</span>
+              <button class="btn btn-primary btn-sm" (click)="$event.stopPropagation(); addToCart(product)">Add to Cart</button>
+            </div>
+          </div>
         </div>
+      </div>
     }
+  </div>
 </div>
+
+@if (selectedProduct) {
+  <div class="product-modal-backdrop" (click)="closeProduct()">
+    <div class="product-modal-card" (click)="$event.stopPropagation()">
+      <button type="button" class="btn-close position-absolute top-0 end-0 m-3" style="z-index: 1;" (click)="closeProduct()"></button>
+      @if (selectedProduct.imageUrl) {
+        <img [src]="selectedProduct.imageUrl" class="w-100" [alt]="selectedProduct.name"
+          style="height: 360px; object-fit: cover;"
+          [style.object-position]="selectedProduct.imagePosition">
+      }
+      <div class="p-4">
+        <h3 class="fw-bold mb-1">{{ selectedProduct.name }}</h3>
+        <p class="text-muted mb-3">{{ selectedProduct.description }}</p>
+        <div class="d-flex justify-content-between align-items-center">
+          <span class="fw-bold fs-3 text-success">${{ selectedProduct.price }}</span>
+          <button class="btn btn-primary" (click)="addToCart(selectedProduct); closeProduct()">Add to Cart</button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

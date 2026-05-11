@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { ProductService, Product } from '../../services/product';
 import { Cart, CartItem } from '../../services/cart';
 import { Auth } from '../../services/auth';
+import { Observable, retry } from 'rxjs';
 
 @Component({
   selector: 'app-product-list',
@@ -11,22 +12,22 @@ import { Auth } from '../../services/auth';
   templateUrl: './product-list.html',
   styleUrl: './product-list.scss',
 })
-export class ProductList implements OnInit{
-  products: Product[] = [];
+export class ProductList implements OnInit {
+  products$!: Observable<Product[]>;
+  selectedProduct: Product | null = null;
   @Output() requestLogin = new EventEmitter<void>();
+  @Output() itemAdded = new EventEmitter<void>();
   constructor(private productService: ProductService, private cart: Cart, private auth: Auth) {}
-
   ngOnInit(): void {
-    this.productService.getProducts().subscribe({
-      next: (data) => {
-        this.products = data;
-      },
-      error: (err) => {
-        console.error('Error fetching products:', err);
-      },
-    });
+    this.products$ = this.productService.products$;
+    this.productService.getProducts().pipe(retry({ count: 3, delay: 3000 })).subscribe();
   }
-
+  openProduct(product: Product): void {
+    this.selectedProduct = product;
+  }
+  closeProduct(): void {
+    this.selectedProduct = null;
+  }
   addToCart(product: Product): void {
     if (!this.auth.isLoggedIn()) {
       this.requestLogin.emit();
@@ -39,5 +40,6 @@ export class ProductList implements OnInit{
       quantity: 1,
     };
     this.cart.addToCart(cartItem);
+    this.itemAdded.emit();
   }
 }
