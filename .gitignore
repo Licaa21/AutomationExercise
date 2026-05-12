@@ -19,7 +19,6 @@ tmp/
 out-tsc/
 bazel-out/
 
-# Angular environment files (Optional: uncomment if you put API keys here later)
 # src/environments/environment.ts
 # src/environments/environment.development.ts
 
@@ -29,6 +28,3 @@ bazel-out/
 .DS_Store
 Thumbs.db
 *.log
-
-# Ignore the local database backup file you will make later so Git doesn't struggle with the large file
-*.bak
