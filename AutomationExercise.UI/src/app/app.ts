@@ -30,7 +30,9 @@ export class App implements OnInit {
     this.cartService.cart$.subscribe(cartItems => {
       this.cartItemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
     });
-    if(this.auth.isLoggedIn()) {
+    if (this.auth.isLoggedIn() && this.auth.isTokenExpired()) {
+      this.logout();
+    } else if (this.auth.isLoggedIn()) {
       this.profileUser = this.auth.loadProfile();
     }
   }

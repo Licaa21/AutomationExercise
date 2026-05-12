@@ -45,9 +45,18 @@ export class Auth {
   saveProfile(profile: any){
     localStorage.setItem('userProfile', JSON.stringify(profile));
   }
-  loadProfile():any
-  {
+  loadProfile():any {
     const raw = localStorage.getItem('userProfile');
     return raw ? JSON.parse(raw) : null;
+  }
+  isTokenExpired(): boolean {
+    const token = this.getToken();
+    if (!token) return true;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return Date.now() >= payload.exp * 1000;
+    }   catch (e) {
+          return true;
+    }
   }
 }

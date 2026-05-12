@@ -11,6 +11,11 @@
           }
           <div class="card-body d-flex flex-column">
             <h5 class="card-title">{{ product.name }}</h5>
+            @if (product.stock === 0) {
+              <span class="badge bg-danger mb-1">Out of stock</span>
+            } @else if (product.stock < 5) {
+              <span class="badge bg-warning text-dark mb-1">Low stock</span>
+            }
             <p class="card-text text-muted flex-grow-1">{{ product.description }}</p>
             <div class="d-flex justify-content-between align-items-center mt-3">
               <span class="fw-bold fs-5 text-success">${{ product.price }}</span>
@@ -35,6 +40,11 @@
       <div class="p-4">
         <h3 class="fw-bold mb-1">{{ selectedProduct.name }}</h3>
         <p class="text-muted mb-3">{{ selectedProduct.description }}</p>
+        @if (selectedProduct.stock === 0) {
+          <span class="badge bg-danger mb-2 d-inline-block">Out of stock</span>
+        } @else if (selectedProduct.stock < 5) {
+          <span class="badge bg-warning text-dark mb-2 d-inline-block">Low stock</span>
+        }
         <div class="d-flex justify-content-between align-items-center">
           <span class="fw-bold fs-3 text-success">${{ selectedProduct.price }}</span>
           <button class="btn btn-primary" (click)="addToCart(selectedProduct); closeProduct()">Add to Cart</button>

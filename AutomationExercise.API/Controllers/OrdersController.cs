@@ -160,7 +160,13 @@ namespace AutomationExercise.API.Controllers
                         command.Parameters.AddWithValue("@OrderID", order.OrderID);
                         command.Parameters.AddWithValue("@Quantity", item.Quantity);
                         command.Parameters.AddWithValue("@UnitPrice", item.UnitPrice);
-                        command.ExecuteNonQuery();                    
+                        command.ExecuteNonQuery();  
+                        using (SqlCommand stockCommand = new SqlCommand("UPDATE Products SET Stock = Stock - @Quantity WHERE ProductID = @ProductID", connection))
+                        {
+                            stockCommand.Parameters.AddWithValue("@Quantity", item.Quantity);
+                            stockCommand.Parameters.AddWithValue("@ProductID", item.ProductID);
+                            stockCommand.ExecuteNonQuery();
+                        }                  
                     }
                 }
             }

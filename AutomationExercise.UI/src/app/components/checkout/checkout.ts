@@ -15,6 +15,8 @@ import { CommonModule } from '@angular/common';
 })
 export class Checkout implements OnInit {
   shippingAddress: string = '';
+  showUnavailable = false;
+  unavailableItems: { name: string; imageUrl: string; productId: number }[] = [];
   mentions: string = '';
   errorMessage: string = '';
   successMessage: string = '';
@@ -46,6 +48,13 @@ export class Checkout implements OnInit {
     this.cartService.cart$.pipe(take(1)).subscribe((cartItems: CartItem[]) => {
       this.productService.getProducts().pipe(take(1)).subscribe((freshProducts: Product[]) => {
         const changes: { name: string; oldPrice: number; newPrice: number }[] = [];
+        const unavailable: { name: string; imageUrl: string; productId: number }[] = [];
+        cartItems.forEach(item => {
+          const fresh = freshProducts.find(p => p.productID === item.productId);
+          if (!fresh || fresh.stock === 0) {
+            unavailable.push({ name: item.name, imageUrl: item.imageUrl, productId: item.productId });
+          }
+        });
         const updatedItems = cartItems.map(item => {
           const fresh = freshProducts.find(p => p.productID === item.productId);
           if (fresh && fresh.price !== item.price) {
@@ -54,8 +63,11 @@ export class Checkout implements OnInit {
           }
           return item;
         });
-
-        if (changes.length > 0) {
+        if (unavailable.length > 0) {
+          this.unavailableItems = unavailable;
+          this.showUnavailable = true;
+          this.cdr.detectChanges();
+        } else if (changes.length > 0){
           this.priceChanges = changes;
           this.pendingCartItems = updatedItems;
           this.showPriceConfirm = true;
@@ -66,7 +78,13 @@ export class Checkout implements OnInit {
       });
     });
   }
-
+  cancelUnavailable() {
+    this.unavailableItems.forEach(item => this.cartService.removeFromCart(item.productId));
+    this.showUnavailable = false;
+    this.unavailableItems = [];
+    this.closeCheckout.emit();
+    this.cdr.detectChanges();
+  }
   confirmOrder() {
     this.showPriceConfirm = false;
     this.submitOrder(this.pendingCartItems);

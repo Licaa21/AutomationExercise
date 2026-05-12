@@ -59,3 +59,21 @@
     </div>
   </div>
 }
+@if (showUnavailable) {
+  <div class="price-confirm-backdrop">
+    <div class="price-confirm-card">
+      <h5 class="fw-bold mb-1">We're sorry for the inconvenience</h5>
+      <p class="text-muted mb-3 small">The following items are no longer available:</p>
+      @for (item of unavailableItems; track item.productId) {
+        <div class="d-flex align-items-center gap-2 px-3 py-2 bg-light rounded mb-2">
+          <img [src]="item.imageUrl" alt="{{ item.name }}" class="checkout-item-img">
+          <span class="text-danger fw-semibold">{{ item.name }}</span>
+        </div>
+      }
+      <div class="d-flex justify-content-end mt-3">
+        <button class="btn btn-danger" (click)="cancelUnavailable()">OK</button>
+      </div>
+    </div>
+  </div>
+}
+
