@@ -32,4 +32,10 @@ export class Cart implements OnInit,OnDestroy {
   removeItem(productId: number) {
     this.cartService.removeFromCart(productId);
   }
+  increment(productId: number) {
+    this.cartService.updateQuantity(productId, 1);
+  }
+  decrement(productId: number) {
+    this.cartService.updateQuantity(productId, -1);
+  }
 }

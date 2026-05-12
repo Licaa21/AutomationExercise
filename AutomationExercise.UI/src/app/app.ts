@@ -26,6 +26,10 @@ export class App implements OnInit {
   cartItemCount: number = 0;
 
   constructor(public auth: Auth, private cartService: CartService) {}
+
+  private lockScroll(lock: boolean) {
+    document.body.classList.toggle('no-scroll', lock);
+  }
   ngOnInit() {
     this.cartService.cart$.subscribe(cartItems => {
       this.cartItemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
@@ -38,11 +42,12 @@ export class App implements OnInit {
   }
   onLoginSuccess() {
     this.showLogin = false;
+    this.lockScroll(false);
     this.cartService.loadCart(this.auth.getUserId());
     this.auth.getprofile().subscribe(profile => {
       this.auth.saveProfile(profile);
       this.profileUser = profile;
-    })
+    });
   }
   onGotoRegister() {
     this.showLogin = false;
@@ -54,6 +59,7 @@ export class App implements OnInit {
   }
   onRequestLogin() {
     this.showLogin = true;
+    this.lockScroll(true);
   }
   logout() {
     this.cartService.saveCart(this.auth.getUserId());
@@ -62,6 +68,7 @@ export class App implements OnInit {
     this.cartService.clearCart();
     this.showCart = false;
     this.showCheckout = false;
+    this.lockScroll(false);
   }
   toggleCart() {
     this.showCart = !this.showCart;
@@ -70,8 +77,38 @@ export class App implements OnInit {
   onProceedToCheckout() {
     this.showCart = false;
     this.showCheckout = true;
+    this.lockScroll(true);
   }
   onOrderPlaced() {
     this.showCheckout = false;
+    this.lockScroll(false);
+  }
+  openOrders() {
+    this.showOrders = true;
+    this.lockScroll(true);
+  }
+  closeOrders() {
+    this.showOrders = false;
+    this.lockScroll(false);
+  }
+  openLogin() {
+    this.showLogin = true;
+    this.lockScroll(true);
+  }
+  closeLogin() {
+    this.showLogin = false;
+    this.lockScroll(false);
+  }
+  openRegister() {
+    this.showRegister = true;
+    this.lockScroll(true);
+  }
+  closeRegister() {
+    this.showRegister = false;
+    this.lockScroll(false);
+  }
+  closeCheckout() {
+    this.showCheckout = false;
+    this.lockScroll(false);
   }
 }

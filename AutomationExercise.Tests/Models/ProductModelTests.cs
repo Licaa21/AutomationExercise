@@ -54,5 +54,27 @@ namespace AutomationExercise.Tests.Models
 
             Assert.Equal("New Name", product.Name);
         }
+
+        [Fact]
+        public void Product_Stock_DefaultsToZero()
+        {
+            var product = new Product();
+            Assert.Equal(0, product.Stock);
+        }
+
+        [Fact]
+        public void Product_Stock_CanBeSet()
+        {
+            var product = new Product { Stock = 15 };
+            Assert.Equal(15, product.Stock);
+        }
+
+        [Fact]
+        public void Product_Stock_CanBeUpdated()
+        {
+            var product = new Product { Stock = 10 };
+            product.Stock -= 3;
+            Assert.Equal(7, product.Stock);
+        }
     }
 }

@@ -1,4 +1,4 @@
-<nav class="navbar navbar-dark bg-dark px-4">
+<nav class="navbar navbar-dark bg-dark px-4 sticky-top">
   <span class="navbar-brand fw-bold">Automation Exercise</span>
   <div class="d-flex gap-2 align-items-center">
     <div class="position-relative">
@@ -25,30 +25,30 @@
           <button type="button" class="btn-close btn-close-white" (click)="showProfile = false"></button>
         </div>
         <div class="profile-dropdown-footer">
-          <button class="btn btn-outline-secondary btn-sm w-100 mb-1" (click)="showOrders = true; showProfile = false">My Orders</button>
+          <button class="btn btn-outline-secondary btn-sm w-100 mb-1" (click)="openOrders(); showProfile = false">My Orders</button>
           <button class="btn btn-danger btn-sm w-100" (click)="logout(); showProfile=false">Logout</button>
         </div>
       </div>
     }
   </div>
 } @else {
-      <button class="btn btn-primary btn-sm" (click)="showLogin=true">Login</button>
+      <button class="btn btn-primary btn-sm" (click)="openLogin()">Login</button>
     }
   </div>
 </nav>
 
 <div class="container mt-4">
   @if (showLogin) {
-    <app-login (loginSuccess)="onLoginSuccess()" (goToRegister)="onGotoRegister()" (close)="showLogin=false"></app-login>
+    <app-login (loginSuccess)="onLoginSuccess()" (goToRegister)="onGotoRegister()" (close)="closeLogin()"></app-login>
   }
   @if (showRegister) {
-    <app-register (goToLogin)="onGotoLogin()" (close)="showRegister=false"></app-register>
+    <app-register (goToLogin)="onGotoLogin()" (close)="closeRegister()"></app-register>
   }
   @if (showOrders) {
-    <app-order-list (close)="showOrders=false"></app-order-list>
+    <app-order-list (close)="closeOrders()"></app-order-list>
   }
   @if (showCheckout) {
-    <app-checkout (closeCheckout)="toggleCart()" (orderPlaced)="onOrderPlaced()"></app-checkout>
+    <app-checkout (closeCheckout)="closeCheckout()" (orderPlaced)="onOrderPlaced()"></app-checkout>
   }
   <app-product-list (requestLogin)="onRequestLogin()" (itemAdded)="showCart=true"></app-product-list>
 </div>

@@ -19,7 +19,9 @@
             <p class="card-text text-muted flex-grow-1">{{ product.description }}</p>
             <div class="d-flex justify-content-between align-items-center mt-3">
               <span class="fw-bold fs-5 text-success">${{ product.price }}</span>
-              <button class="btn btn-primary btn-sm" (click)="$event.stopPropagation(); addToCart(product)">Add to Cart</button>
+              @if (product.stock > 0) {
+                <button class="btn btn-primary btn-sm" (click)="$event.stopPropagation(); addToCart(product)">Add to Cart</button>
+              }
             </div>
           </div>
         </div>
@@ -47,7 +49,9 @@
         }
         <div class="d-flex justify-content-between align-items-center">
           <span class="fw-bold fs-3 text-success">${{ selectedProduct.price }}</span>
-          <button class="btn btn-primary" (click)="addToCart(selectedProduct); closeProduct()">Add to Cart</button>
+          @if (selectedProduct.stock > 0) {
+            <button class="btn btn-primary" (click)="addToCart(selectedProduct); closeProduct()">Add to Cart</button>
+          }
         </div>
       </div>
     </div>

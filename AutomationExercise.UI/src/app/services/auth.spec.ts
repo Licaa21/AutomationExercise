@@ -3,6 +3,12 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { Auth } from './auth';
 
+function makeToken(exp: number): string {
+  const header = btoa('{"alg":"HS256","typ":"JWT"}');
+  const payload = btoa(JSON.stringify({ exp }));
+  return `${header}.${payload}.signature`;
+}
+
 describe('Auth Service', () => {
   let service: Auth;
 
@@ -61,5 +67,37 @@ describe('Auth Service', () => {
     service.saveUserId(42);
     service.logout();
     expect(service.getUserId()).toBe(0);
+  });
+
+  it('should save and load profile from localStorage', () => {
+    const profile = { username: 'Robert1', email: 'robert@test.com', createdAt: '2026-01-01' };
+    service.saveProfile(profile);
+    expect(service.loadProfile()).toEqual(profile);
+  });
+
+  it('should return null when no profile is stored', () => {
+    expect(service.loadProfile()).toBeNull();
+  });
+
+  it('should remove profile from localStorage on logout', () => {
+    service.saveProfile({ username: 'Robert1', email: 'r@r.com', createdAt: '2026-01-01' });
+    service.logout();
+    expect(service.loadProfile()).toBeNull();
+  });
+
+  it('should return true for isTokenExpired when no token is stored', () => {
+    expect(service.isTokenExpired()).toBe(true);
+  });
+
+  it('should return true for isTokenExpired when token is expired', () => {
+    const expiredExp = Math.floor(Date.now() / 1000) - 3600;
+    service.saveToken(makeToken(expiredExp));
+    expect(service.isTokenExpired()).toBe(true);
+  });
+
+  it('should return false for isTokenExpired when token is still valid', () => {
+    const futureExp = Math.floor(Date.now() / 1000) + 3600;
+    service.saveToken(makeToken(futureExp));
+    expect(service.isTokenExpired()).toBe(false);
   });
 });

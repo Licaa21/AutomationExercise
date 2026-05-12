@@ -24,9 +24,11 @@ export class ProductList implements OnInit {
   }
   openProduct(product: Product): void {
     this.selectedProduct = product;
+    document.body.classList.add('no-scroll');
   }
   closeProduct(): void {
     this.selectedProduct = null;
+    document.body.classList.remove('no-scroll');
   }
   addToCart(product: Product): void {
     if (!this.auth.isLoggedIn()) {

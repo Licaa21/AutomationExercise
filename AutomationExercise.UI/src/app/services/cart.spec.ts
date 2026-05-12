@@ -1,6 +1,10 @@
 import { TestBed } from '@angular/core/testing';
 import { Cart, CartItem } from './cart';
 
+const mockItem = (id: number, name: string, price: number, qty: number): CartItem => ({
+  productId: id, name, price, quantity: qty, imageUrl: 'img.jpg'
+});
+
 describe('Cart Service', () => {
   let service: Cart;
 
@@ -15,8 +19,7 @@ describe('Cart Service', () => {
   });
 
   it('should add a new item to the cart', () => {
-    const item: CartItem = { productId: 1, name: 'Wireless Mouse', price: 25.99, quantity: 1 };
-    service.addToCart(item);
+    service.addToCart(mockItem(1, 'Wireless Mouse', 25.99, 1));
     service.cart$.subscribe(items => {
       expect(items.length).toBe(1);
       expect(items[0].name).toBe('Wireless Mouse');
@@ -24,9 +27,8 @@ describe('Cart Service', () => {
   });
 
   it('should increment quantity when adding an already existing item', () => {
-    const item: CartItem = { productId: 1, name: 'Wireless Mouse', price: 25.99, quantity: 1 };
-    service.addToCart(item);
-    service.addToCart(item);
+    service.addToCart(mockItem(1, 'Wireless Mouse', 25.99, 1));
+    service.addToCart(mockItem(1, 'Wireless Mouse', 25.99, 1));
     service.cart$.subscribe(items => {
       expect(items.length).toBe(1);
       expect(items[0].quantity).toBe(2);
@@ -34,15 +36,15 @@ describe('Cart Service', () => {
   });
 
   it('should keep separate entries for different products', () => {
-    service.addToCart({ productId: 1, name: 'Mouse', price: 25.99, quantity: 1 });
-    service.addToCart({ productId: 2, name: 'Keyboard', price: 89.99, quantity: 1 });
+    service.addToCart(mockItem(1, 'Mouse', 25.99, 1));
+    service.addToCart(mockItem(2, 'Keyboard', 89.99, 1));
     service.cart$.subscribe(items => {
       expect(items.length).toBe(2);
     });
   });
 
   it('should remove an item from the cart by productId', () => {
-    service.addToCart({ productId: 1, name: 'Wireless Mouse', price: 25.99, quantity: 1 });
+    service.addToCart(mockItem(1, 'Wireless Mouse', 25.99, 1));
     service.removeFromCart(1);
     service.cart$.subscribe(items => {
       expect(items.length).toBe(0);
@@ -50,7 +52,7 @@ describe('Cart Service', () => {
   });
 
   it('should not affect cart when removing a productId that does not exist', () => {
-    service.addToCart({ productId: 1, name: 'Wireless Mouse', price: 25.99, quantity: 1 });
+    service.addToCart(mockItem(1, 'Wireless Mouse', 25.99, 1));
     service.removeFromCart(999);
     service.cart$.subscribe(items => {
       expect(items.length).toBe(1);
@@ -58,8 +60,8 @@ describe('Cart Service', () => {
   });
 
   it('should clear all items from the cart', () => {
-    service.addToCart({ productId: 1, name: 'Mouse', price: 25.99, quantity: 1 });
-    service.addToCart({ productId: 2, name: 'Keyboard', price: 89.99, quantity: 1 });
+    service.addToCart(mockItem(1, 'Mouse', 25.99, 1));
+    service.addToCart(mockItem(2, 'Keyboard', 89.99, 1));
     service.clearCart();
     service.cart$.subscribe(items => {
       expect(items.length).toBe(0);
@@ -67,8 +69,8 @@ describe('Cart Service', () => {
   });
 
   it('should calculate total price correctly', () => {
-    service.addToCart({ productId: 1, name: 'Mouse', price: 25.00, quantity: 2 });
-    service.addToCart({ productId: 2, name: 'Keyboard', price: 90.00, quantity: 1 });
+    service.addToCart(mockItem(1, 'Mouse', 25.00, 2));
+    service.addToCart(mockItem(2, 'Keyboard', 90.00, 1));
     service.cart$.subscribe(items => {
       const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
       expect(total).toBe(140.00);
@@ -79,10 +81,42 @@ describe('Cart Service', () => {
     const emissions: number[] = [];
     service.cart$.subscribe(items => emissions.push(items.length));
 
-    service.addToCart({ productId: 1, name: 'Mouse', price: 25.99, quantity: 1 });
-    service.addToCart({ productId: 2, name: 'Keyboard', price: 89.99, quantity: 1 });
+    service.addToCart(mockItem(1, 'Mouse', 25.99, 1));
+    service.addToCart(mockItem(2, 'Keyboard', 89.99, 1));
     service.removeFromCart(1);
 
     expect(emissions).toEqual([0, 1, 2, 1]);
+  });
+
+  it('should increment item quantity with updateQuantity', () => {
+    service.addToCart(mockItem(1, 'Mouse', 25.99, 1));
+    service.updateQuantity(1, 1);
+    service.cart$.subscribe(items => {
+      expect(items[0].quantity).toBe(2);
+    });
+  });
+
+  it('should decrement item quantity with updateQuantity', () => {
+    service.addToCart(mockItem(1, 'Mouse', 25.99, 3));
+    service.updateQuantity(1, -1);
+    service.cart$.subscribe(items => {
+      expect(items[0].quantity).toBe(2);
+    });
+  });
+
+  it('should remove item when updateQuantity decrements to 0', () => {
+    service.addToCart(mockItem(1, 'Mouse', 25.99, 1));
+    service.updateQuantity(1, -1);
+    service.cart$.subscribe(items => {
+      expect(items.length).toBe(0);
+    });
+  });
+
+  it('should do nothing when updateQuantity is called with unknown productId', () => {
+    service.addToCart(mockItem(1, 'Mouse', 25.99, 2));
+    service.updateQuantity(999, -1);
+    service.cart$.subscribe(items => {
+      expect(items[0].quantity).toBe(2);
+    });
   });
 });

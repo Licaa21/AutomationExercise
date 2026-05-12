@@ -23,6 +23,12 @@ export class Register {
   constructor(private auth: Auth, private cdr: ChangeDetectorRef) {}
 
   register(): void {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(this.email)) {
+      this.errorMessage = 'Please enter a valid email address.';
+      this.cdr.detectChanges();
+      return;
+    }
     this.auth.register(this.username, this.email, this.password).subscribe({
       next: (response) => {
         this.successMessage = 'Registration successful! You can now log in.';

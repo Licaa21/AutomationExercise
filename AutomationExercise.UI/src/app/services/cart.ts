@@ -35,7 +35,20 @@ export class Cart {
 
     this.cartSubject.next(currentCart);
   }
-  removeFromCart(productId: number): void 
+  updateQuantity(productId: number, delta: number): void {
+    const currentCart = this.cartSubject.getValue();
+    const item = currentCart.find(i => i.productId === productId);
+    if (item) {
+      item.quantity += delta;
+      if (item.quantity <= 0) {
+        this.cartSubject.next(currentCart.filter(i => i.productId !== productId));
+      } else {
+        this.cartSubject.next([...currentCart]);
+      }
+    }
+  }
+
+  removeFromCart(productId: number): void
   {
     const currentCart = this.cartSubject.getValue();
     const updatedCart = currentCart.filter(
